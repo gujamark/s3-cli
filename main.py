@@ -184,8 +184,7 @@ parser.add_argument("-file",
                     help="File which will be uploaded to bucket",
                     type=str,
                     nargs="?",
-                    const="True",
-                    default="False")
+                    default=False)
 
 parser.add_argument("-lce",
                     "--lifecycle_expiration_days",
