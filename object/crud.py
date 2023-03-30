@@ -78,3 +78,18 @@ def multipart_upload(aws_s3_client, filename, bucket_name, key):
       i += 1
     result = aws_s3_client.complete_multipart_upload(Bucket=bucket_name, Key=key, UploadId=mpu_id,MultipartUpload={"Parts" : parts})
     return result
+
+
+def delete_objects(aws_s3_client,object_keys, bucket_name):
+  response = aws_s3_client.delete_objects(Bucket=bucket_name, Delete={
+    "Objects" : [ 
+        {"Key" : object_key} for object_key in object_keys 
+      ]
+  })
+  
+  status_code = response["ResponseMetadata"]["HTTPStatusCode"]
+  if status_code == 200:
+      for deleted_files in response["Deleted"]:
+        print(f"{deleted_files['Key']} --> Deleted")
+      return True
+  return False

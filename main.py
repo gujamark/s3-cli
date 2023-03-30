@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 from auth import init_client
 from bucket.crud import list_buckets, create_bucket, delete_bucket, bucket_exists
 from bucket.policy import read_bucket_policy, assign_policy, put_lifecycle_policy
-from object.crud import download_file_and_upload_to_s3, get_objects, upload_file, multipart_upload
+from object.crud import download_file_and_upload_to_s3, get_objects, upload_file, multipart_upload, delete_objects
 from bucket.encryption import set_bucket_encryption, read_bucket_encryption
 import argparse
 import magic
@@ -191,6 +191,18 @@ parser.add_argument("-lce",
                     help="After how many days objects will be deleted",
                     type=int)
 
+parser.add_argument("-del",
+                    "--delete_object",
+                    help="Delete object",
+                    action="store_true")
+
+parser.add_argument("-ok",
+                    "--object_key",
+                    help="Object key",
+                    type=str,
+                    nargs="+",
+                    default=None)
+
 def main():
   s3_client = init_client()
   args = parser.parse_args()
@@ -236,6 +248,9 @@ def main():
     if (args.list_objects == "True"):
       get_objects(s3_client, args.bucket_name)
     
+    if args.delete_object:
+      delete_objects(s3_client, args.object_key, args.bucket_name)
+      
     if args.file:
       ALLOWED_MIMES = ["application/pdf","text/plain","image/png","image/jpg","image/jpeg"]
       mime = magic.Magic(mime=True)
